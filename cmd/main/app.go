@@ -3,10 +3,10 @@ package main
 import (
 	"fmt"
 	"github.com/julienschmidt/httprouter"
-	"log"
 	"net"
 	"net/http"
 	"rest-api-learning/internal/user"
+	"rest-api-learning/pkg/logging"
 	"time"
 )
 
@@ -16,20 +16,21 @@ func IndexHandler(w http.ResponseWriter, r *http.Request, params httprouter.Para
 }
 
 func main() {
-	log.Println("create router")
+	logging.Init()
+	logger := logging.GetLogger()
+	logger.Info("create router")
 	router := httprouter.New()
 
-	log.Println("create handler")
-	handler := user.NewHandler()
+	logger.Info("create handler")
+	handler := user.NewHandler(logger)
 	handler.Register(router)
 
-	log.Println("start")
+	logger.Info("start")
 	start(router)
 }
 
 func start(router *httprouter.Router) {
-	//router.GET("/api/:name", IndexHandler)
-
+	logger := logging.GetLogger()
 	listener, err := net.Listen("tcp", ":8080")
 	if err != nil {
 		panic(err)
@@ -40,5 +41,5 @@ func start(router *httprouter.Router) {
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}
-	log.Fatal(server.Serve(listener))
+	logger.Fatal(server.Serve(listener))
 }
