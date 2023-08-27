@@ -52,11 +52,13 @@ func start(router *httprouter.Router, cfg *config.Config) {
 
 		logger.Info("listen unix socket")
 		listener, listenErr = net.Listen("unix", socketPath)
+		logger.Infof("server is listening unix socket %s", socketPath)
 
 		//запуск программы на порту
 	} else {
 		logger.Info("listen tcp socket")
 		listener, listenErr = net.Listen("tcp", fmt.Sprintf("%s:%s", cfg.Listen.BindIP, cfg.Listen.Port))
+		logger.Infof("server is listening port %s:%s", cfg.Listen.BindIP, cfg.Listen.Port)
 
 	}
 	if listenErr != nil {
@@ -67,6 +69,6 @@ func start(router *httprouter.Router, cfg *config.Config) {
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}
-	logger.Infof("server is listening port %s:%s", cfg.Listen.BindIP, cfg.Listen.Port)
+
 	logger.Fatal(server.Serve(listener))
 }
