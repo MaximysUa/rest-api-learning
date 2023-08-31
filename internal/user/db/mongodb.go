@@ -7,6 +7,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"rest-api-learning/internal/apperror"
 	"rest-api-learning/internal/user"
 	"rest-api-learning/pkg/logging"
 )
@@ -43,7 +44,7 @@ func (d *db) FindOne(ctx context.Context, id string) (u user.User, err error) {
 			//TODO errorEntityNotFound
 			return u, fmt.Errorf("ErrEntityNotFound")
 		}
-		return u, fmt.Errorf("failed to find user by id: %s, due to error: %v", id, err)
+		return u, apperror.ErrNotFound
 	}
 	if err = result.Decode(&u); err != nil {
 		return u, fmt.Errorf("failed to find decode user(id:%s) from db due to error: %v", id, err)
@@ -81,7 +82,7 @@ func (d *db) Update(ctx context.Context, user user.User) error {
 	}
 
 	if result.ModifiedCount == 0 {
-		return fmt.Errorf("not found")
+		return apperror.ErrNotFound
 	}
 
 	d.logger.Tracef("Matched %d, documents and modified %d documents", result.MatchedCount, result.ModifiedCount)
@@ -102,7 +103,7 @@ func (d *db) Delete(ctx context.Context, id string) error {
 		return fmt.Errorf("failed to execute query. error: %v", err)
 	}
 	if result.DeletedCount == 0 {
-		return fmt.Errorf("not found")
+		return apperror.ErrNotFound
 	}
 
 	d.logger.Tracef("Deleted %d documents", result.DeletedCount)
