@@ -8,6 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"rest-api-learning/internal/apperror"
+	"rest-api-learning/internal/author"
 	"rest-api-learning/internal/user"
 	"rest-api-learning/pkg/logging"
 )
@@ -111,7 +112,7 @@ func (d *db) Delete(ctx context.Context, id string) error {
 	return nil
 }
 
-func NewStorage(database *mongo.Database, collection string, logger *logging.Logger) user.Storage {
+func NewStorage(database *mongo.Database, collection string, logger *logging.Logger) author.Storage {
 	return &db{
 		collection: database.Collection(collection),
 		logger:     logger,
