@@ -4,8 +4,9 @@ is_debug: true
 listen:
   type: port
   port: 8080
-mongodb:
+storage:
   host: localhost
-  port: 27017
-  collection: users
-  database: user-service
+  port: 5432
+  database: postgres
+  username: postgres
+  password: 142569
