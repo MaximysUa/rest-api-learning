@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"github.com/julienschmidt/httprouter"
 	"net"
@@ -8,8 +9,10 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	book "rest-api-learning/internal/book/db"
 	"rest-api-learning/internal/config"
 	"rest-api-learning/internal/user"
+	"rest-api-learning/pkg/client/postgresql"
 	"rest-api-learning/pkg/logging"
 	"time"
 )
@@ -26,8 +29,18 @@ func main() {
 	router := httprouter.New()
 
 	cfg := config.GetConfig()
+	newClient, err := postgresql.NewClient(context.TODO(), 3, cfg.Storage)
+	repository := book.NewRepository(newClient, logger)
+	all, err := repository.FindAll(context.TODO())
+	if err != nil {
+		logger.Fatal(err)
+	}
+	for _, i := range all {
+		logger.Debug(i.Name)
+	}
 
 	logger.Info("create handler")
+
 	handler := user.NewHandler(logger)
 	handler.Register(router)
 
